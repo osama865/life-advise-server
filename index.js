@@ -20,6 +20,10 @@ readFile();
  */
 
 let advs = []
+let db;
+let collectionName = "advices";
+let dbName = "life";
+
 app.get('/data', (req, res) => {
     res.send(advs)
 })
@@ -27,17 +31,24 @@ app.get('/data', (req, res) => {
 app.get('/', (req, res) => {
     res.send('hey')
 })
+
+app.get('/one', (req, res) => {
+    let id = req.query.id
+    res.send('hey', id)
+    db.collection(collectionName).findOne(id).then((result) => {
+        res.send('hey advice', result)
+    })
+})
+
 const url =
     "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
 
-let collectionName = "advices";
-let dbName = "life";
 
 MongoClient.connect(url, (err, res) => {
     if (err) throw new Error(err);
-    const db = res.db(dbName);
+    db = res.db(dbName);
     const collection = db.collection(collectionName);
-    db.collection(collectionName).find().toArray().then((res) => {
+    db.collection(collectionName).findOne().toArray().then((res) => {
         advs = res
     })
 });
