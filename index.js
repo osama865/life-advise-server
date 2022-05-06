@@ -31,17 +31,13 @@ app.get('/data', (req, res) => {
 app.get('/', (req, res) => {
     res.send('hey')
 })
-// 61d553b2f7e27f9a58952f20
+// 61d553b2f7e27f9a58952f20 
 app.get('/one', async (req, res) => {
     let id = req.query.id
-    let _id = req.params.id
-    console.log(req.query, " body ", req.body);
-    res.send('hey', res.json(id) , ' or ' , res.json(_id) ,' or' , req.body)
-    /**
-     * db.collection(collectionName).findOne(id).then((result) => {
+    res.send('hey', res.json(id))
+    db.collection(collectionName).findOne(id).then((result) => {
         res.send('hey advice', result)
     })
-     */
 })
 
 const url =
