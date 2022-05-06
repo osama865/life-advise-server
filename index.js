@@ -37,7 +37,7 @@ MongoClient.connect(url, (err, res) => {
     if (err) throw new Error(err);
     const db = res.db(dbName);
     const collection = db.collection(collectionName);
-    db.collection(collection).find().toArray().then((res) => {
+    db.collection(collectionName).find().toArray().then((res) => {
         advs = res
     })
 });
