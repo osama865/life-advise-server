@@ -1,63 +1,46 @@
-import { Meteor } from "meteor/meteor";
-import { WebApp } from "meteor/webapp";
-import { Picker } from "meteor/meteorhacks:picker";
-import bodyParser from "body-parser";
-import "./publications/index";
-const webpush = require("web-push");
+const express = require('express')
+const dotenv = require('dotenv')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const webpush = require('web-push')
 
-function rand() {
-  let max = 0,
-    min = 0;
-  max = Meteor.call("countAdvises");
-  let randNumb = Math.floor(Math.random() * (max - min + 1)) + min;
-  console.log(randNumb, "lllllllll");
-  return randNumb;
-}
+const app = express()
 
-const getAdvice = () => {
-  const advice = Meteor.call("fetchOneAdvise", rand());
-  return advice;
-};
+dotenv.config()
 
-// Listen to incoming HTTP requests (can only be used on the server).
-WebApp.connectHandlers.use("/random-fetch", (req, res, next) => {
-  res.writeHead(200);
-  let data = JSON.stringify(getAdvice());
-  res.end(data);
+app.use(cors())
+app.use(bodyParser.json())
+
+webpush.setVapidDetails(process.env.WEB_PUSH_CONTACT || "mailto: osama0000ibrahim@gmail.com", process.env.PUBLIC_VAPID_KEY || "BAHPN9XNOB9KiLT7KCnxZoJN8mLkMpG-PhNvLQShm91boF93h9RQiXY96XTTTwyRjAB6TLknbjs_Zpoohwtg-Uk", process.env.PRIVATE_VAPID_KEY || "3aGkYcoaidNC-7FG9BcFkDjsHyp9L5f8a9qcqtQg1c4")
+
+app.get('/', (req, res) => {
+  res.send('Hello world!')
+})
+
+app.post('/subscribe', (req, res) => {
+  const subscription = req.body
+
+  console.log(subscription,'sub' ,req.body.id)
+
+  const payload = JSON.stringify({
+    title: 'Hello!',
+    body: 'It works.',
+  })
+
+  webpush.sendNotification(subscription, payload)
+    .then(result => console.log(result))
+    .catch(e => console.log(e.stack))
+
+  res.status(200).json({'success': true})
 });
 
-Meteor.startup(() => {
-  // generate vapid keys and store'em in db with id "1"
-  let VAPIDKEYS = webpush.generateVAPIDKeys();
+app.get('/sub', (req, res) => {
+  console.log(req.body);
+})
 
-  Meteor.call("setVAPIDKEYS", VAPIDKEYS, "1", (err, res) => {
-    if (err) {
-      throw new Error(err);
-    }
-  });
+/*
 
-  Meteor.call("getVAPIDKEYS", "1", (err, res) => {
-    if (err) {
-      throw new Error(err);
-    }
-    webpush.setVapidDetails(
-      "mailto:osama0000ibrahim@gmail.com",
-      res.publicKey,
-      res.privateKey
-    );
-  });
+ */
 
-  Picker.middleware(bodyParser.urlencoded({ extended: false }));
-  Picker.middleware(bodyParser.json());
-  Picker.route("/subscribe", function (params, req, res, next) {
-    const data = getAdvice();
-    let i = 0;
-    const payload = JSON.stringify({
-      title: `Hey, Your Advices for today!`,
-      data,
-    });
-    setInterval(() => {
-      webpush.sendNotification(req.body, payload);
-    }, 1000 * 60 * 10);
-  });
-});
+
+app.listen(3001, () => console.log('The server has been started on the port 3001'))
