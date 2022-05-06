@@ -1,9 +1,11 @@
 const express = require('express')
 const app = express()
 const { MongoClient } = require("mongodb");
-const port = 3001
+const port = process.env.PORT || 3001
 
-const fs = require("fs");
+
+/**
+ * const fs = require("fs");
 const path = "./all.json";
 const encode = "utf-8";
 let advises = [];
@@ -15,7 +17,7 @@ const readFile = () => {
 };
 
 readFile();
-
+ */
 
 let advs = []
 app.get('/data', (req, res) => {
@@ -24,7 +26,7 @@ app.get('/data', (req, res) => {
 
 app.get('/', (req, res) => {
     res.send('hey')
-  })
+})
 const url =
     "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
 
