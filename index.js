@@ -32,10 +32,10 @@ app.get('/', (req, res) => {
     res.send('hey')
 })
 
-app.get('/one', (req, res) => {
+app.get('/one/', async (req, res) => {
     let id = req.query.id
     res.send('hey', id)
-    db.collection(collectionName).findOne(id).then((result) => {
+    await db.collection(collectionName).findOne(id).then((result) => {
         res.send('hey advice', result)
     })
 })

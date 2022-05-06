@@ -8,6 +8,8 @@
     "mongoose": "^6.3.2",
     "web-push": "^3.5.0"
   },"scripts": {
-    "commit" : "git add . && git commit -m $M"
+    "commit" : "git add . && git commit -m $M",
+    "log" :"heroku logs --tail",
+    "push":""
   }
 }
