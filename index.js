@@ -27,11 +27,23 @@ app.get('/data', (req, res) => {
 app.get('/', (req, res) => {
     res.send('hey')
 })
+
+app.get('/find_one', (req, res) => {
+    const id = req.query.id
+    const advice = db.collection(collectionName).findOne({ _id: `${id}` })
+    res.send('hey', advice)
+})
+
+app.get('/find_first', (req, res) => {
+    const advice = db.collection(collectionName).findOne()
+    res.send('hey', advice)
+})
+
 // 61d553b2f7e27f9a58952f20 
 app.get('/one', async (req, res) => {
     let id = req.query.id
     res.send('hey', res.json(id))
-    db.collection(collectionName).findOne(id).then((result) => {
+    db.collection(collectionName).findOne().then((result) => {
         res.send('hey advice', result)
     })
 })
