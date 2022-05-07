@@ -7,17 +7,14 @@ const port = process.env.PORT || 3001
 const url =
     "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
 
-var db;
+// var db;
 let collectionName = "advices";
 let dbName = "life";
-MongoClient.connect(url).then(res => {
-    db = res.db(dbName)
-}).catch(err => {
-    console.error(err)
-})
+const db = await MongoClient.connect(url);
+
 
 function find() {
-    return db.collection(collectionName).find().toArray()
+    return db.db(dbName).collection(collectionName).find().toArray()
 }
 
 app.get('/data', (req, res) => {
@@ -30,7 +27,7 @@ app.get('/', (req, res) => {
 
 app.get('/find_one', async (req, res) => {
     const id = req.query.id
-    const advice = await db.collection(collectionName).findOne({ _id: `${id}` })
+    const advice = await db.db(dbName).collection(collectionName).findOne({ _id: `${id}` })
     res.send(`"${id}"`)
 })
 
