@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 app.get('/find_one', (req, res) => {
     const id = req.query.id
     const advice = db.collection(collectionName).findOne({ _id: `${id}` })
-    res.send('hey', advice)
+    res.send(advice)
 })
 
 app.get('/find_first', (req, res) => {
@@ -42,9 +42,9 @@ app.get('/find_first', (req, res) => {
 // 61d553b2f7e27f9a58952f20 
 app.get('/one', async (req, res) => {
     let id = req.query.id
-    res.send('hey', res.json(id))
+    res.send(res.json(id))
     db.collection(collectionName).findOne().then((result) => {
-        res.send('hey advice', result)
+        // res.status('hey advice', result)
     })
 })
 
