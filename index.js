@@ -4,28 +4,28 @@ const { MongoClient } = require("mongodb");
 const port = process.env.PORT || 3001
 
 
-/**
- * const fs = require("fs");
-const path = "./all.json";
-const encode = "utf-8";
-let advises = [];
-const readFile = () => {
-    const data = fs.readFileSync(path, encode);
-    advises = JSON.parse(data);
-    // console.log(advises);
-    return data;
-};
+const url =
+    "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
 
-readFile();
- */
+let db;
+
+MongoClient.connect(url).then(res => {
+    db = res
+}).catch(err => {
+    console.error(err)
+})
+
+function find() {
+    return await db.collection(collectionName).find().toArray()
+}
 
 let advs = []
-let db;
 let collectionName = "advices";
 let dbName = "life";
 
 app.get('/data', (req, res) => {
-    res.send(advs)
+    
+    res.send(find())
 })
 
 app.get('/', (req, res) => {
@@ -40,18 +40,7 @@ app.get('/one', async (req, res) => {
     })
 })
 
-const url =
-    "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
 
-
-MongoClient.connect(url, (err, res) => {
-    if (err) throw new Error(err);
-    db = res.db(dbName);
-    const collection = db.collection(collectionName);
-    db.collection(collectionName).find().toArray().then((res) => {
-        advs = res
-    })
-});
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

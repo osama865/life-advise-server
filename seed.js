@@ -24,3 +24,18 @@ MongoClient.connect(url, (err, res) => {
       console.log(res);
     });
 });
+
+/**
+ * const fs = require("fs");
+const path = "./all.json";
+const encode = "utf-8";
+let advises = [];
+const readFile = () => {
+    const data = fs.readFileSync(path, encode);
+    advises = JSON.parse(data);
+    // console.log(advises);
+    return data;
+};
+
+readFile();
+ */
