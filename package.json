@@ -10,6 +10,7 @@
   },"scripts": {
     "commit" : "git add . && git commit -m $M",
     "log" :"heroku logs --tail",
-    "push":"git push heroku master"
+    "push":"git push heroku master",
+    "all" : "npm run push && npm run log"
   }
 }

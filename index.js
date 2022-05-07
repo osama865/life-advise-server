@@ -8,23 +8,19 @@ const url =
     "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
 
 let db;
-
+let collectionName = "advices";
+let dbName = "life";
 MongoClient.connect(url).then(res => {
-    db = res
+    db = res.db(dbName)
 }).catch(err => {
     console.error(err)
 })
 
 function find() {
-    return await db.collection(collectionName).find().toArray()
+    return db.collection(collectionName).find().toArray()
 }
 
-let advs = []
-let collectionName = "advices";
-let dbName = "life";
-
 app.get('/data', (req, res) => {
-    
     res.send(find())
 })
 
