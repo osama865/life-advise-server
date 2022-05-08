@@ -21,14 +21,10 @@ MongoClient.connect(url, { useUnifiedTopology: true })
             res.send(advises)
         })
 
-        app.get('/', (req, res) => {
-            res.send('hey')
-        })
-
         app.get('/find_one', (req, res) => {
             const id = req.query.id
             const advice = db.db(dbName).collection(collectionName).findOne({ _id: `${id}` })
-            res.send(`"${id}"`)
+            res.send(advice)
         })
 
         app.get('/find_first', (req, res) => {
