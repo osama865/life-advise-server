@@ -37,11 +37,13 @@ MongoClient.connect(url, { useUnifiedTopology: true })
 
       const subscription = req.body
       // first make sure no dublicate
-      collection.findOne({ endpoint: subscription.endpoint }).then((result) => {
+      collection.findOne(subscription,{}).then((result) => {
         // if the doc is already saved just exit
+        console.log('doc is found', result);
         return ;
       }).catch((err) => {
         // if doc not found then add it 
+        console.log('doc not found and will be inserted');
         collection.insertOne(subscription).then((result) => {
           console.log(result);
         }).catch((err) => {
