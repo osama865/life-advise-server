@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const webpush = require('web-push')
 const { MongoClient } = require("mongodb");
-const app = require('../server/index')
+const app = require('.');
 dotenv.config()
 app.use(cors())
 app.use(bodyParser.json())
