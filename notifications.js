@@ -1,13 +1,10 @@
-const express = require('express')
 const dotenv = require('dotenv')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const webpush = require('web-push')
-
-const app = express()
-
+const { MongoClient } = require("mongodb");
+const app = require('../server/index')
 dotenv.config()
-
 app.use(cors())
 app.use(bodyParser.json())
 
@@ -17,30 +14,39 @@ app.get('/', (req, res) => {
   res.send('Hello world!')
 })
 
-app.post('/subscribe', (req, res) => {
-  const subscription = req.body
+// route for registering
+// insert registeration data on collection ("subscribers")
+// when sending notification retrive all subscribers endpoints
+// send notification to all endpoints listed
+// check notification and service worker at IOS and opera and firefox
+// visit PWA store to see if you can make it downloadable
+const url =
+  "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
+MongoClient.connect(url, { useUnifiedTopology: true })
+  .then(client => {
+    const db = client.db()
+    const collection = db.collection("subscribers")
+    app.post('/subscribe', (req, res) => {
+      const subscription = req.body
+      collection.insertOne(subscription).then((result) => {
+        console.log(result);
+      }).catch((err) => {
+        console.error(err);
+      });
 
-  console.log(subscription,'sub' ,req.body.id)
+      const payload = JSON.stringify({
+        title: 'Hello!',
+        body: 'It works.',
+      })
 
-  const payload = JSON.stringify({
-    title: 'Hello!',
-    body: 'It works.',
-  })
+      webpush.sendNotification(subscription, payload)
+        .then(result => console.log(result))
+        .catch(e => console.log(e.stack))
 
-  webpush.sendNotification(subscription, payload)
-    .then(result => console.log(result))
-    .catch(e => console.log(e.stack))
-
-  res.status(200).json({'success': true})
-});
+    })
+    res.status(200).json({ 'success': true })
+  });
 
 app.get('/sub', (req, res) => {
   console.log(req.body);
 })
-
-/*
-
- */
-
-
-app.listen(3001, () => console.log('The server has been started on the port 3001'))
