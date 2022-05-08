@@ -21,14 +21,14 @@ app.get('/', (req, res) => {
 // check notification and service worker at IOS and opera and firefox
 // visit PWA store to see if you can make it downloadable
 const url =
-  "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
+  "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/advice?retryWrites=true&w=majority";
 MongoClient.connect(url, { useUnifiedTopology: true })
   .then(client => {
     const db = client.db()
     const collection = db.collection("subscribers")
     app.post('/subscribe', (req, res) => {
       const subscription = req.body
-      collection.insertOne(subscription).then((result) => {
+      collection.updateOne(subscription, {}, { upsert: true }).then((result) => {
         console.log(result);
       }).catch((err) => {
         console.error(err);
@@ -39,9 +39,26 @@ MongoClient.connect(url, { useUnifiedTopology: true })
         body: 'It works.',
       })
 
-      webpush.sendNotification(subscription, payload)
-        .then(result => console.log(result))
-        .catch(e => console.log(e.stack))
+      async function getAllSubscribers() {
+        return await collection.find().toArray()
+      }
+
+      app.get('/subs', (req, res) => {
+        getAllSubscribers().then((result) => {
+          res.send(result)
+          console.log(result);
+        }).catch((err) => {
+          console.error(err);
+        });
+        
+      })
+
+      setInterval(() => {
+        webpush.sendNotification(subscription, payload)
+          .then(result => console.log(result))
+          .catch(e => console.log(e.stack))
+      }, 1000 * 60 * 2)
+
       res.status(200).json({ 'success': true })
 
     })
