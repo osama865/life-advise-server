@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 MongoClient.connect(url, { useUnifiedTopology: true })
     .then(db => {
         app.get('/data', (req, res) => {
-            db.db(dbName).collection(collectionName).find().then((result) => {
+            db.db(dbName).collection(collectionName).find().toArray().then((result) => {
                 const advises = result
                 console.log(advises);
                 res.send(advises)
@@ -28,7 +28,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
 
         app.get('/find_one', (req, res) => {
             const id = req.query.id
-            db.db(dbName).collection(collectionName).findOne({ _id: `${id}` }).then((result) => {
+            db.db(dbName).collection(collectionName).findOne({ _id: `${JSON.parse(id)}` }).then((result) => {
                 const advice = result
                 console.log(advice);
                 res.send(advice)
