@@ -28,7 +28,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
     const collection = db.collection("subscribers")
     app.post('/subscribe', (req, res) => {
       const subscription = req.body
-      collection.updateOne({}, {$set : subscription}, { upsert: true }).then((result) => {
+      collection.updateOne({}, { $set: subscription }, { upsert: true }).then((result) => {
         console.log(result);
       }).catch((err) => {
         console.error(err);
@@ -43,22 +43,42 @@ MongoClient.connect(url, { useUnifiedTopology: true })
         return await collection.find().toArray()
       }
 
+      // a function to send notification to all subscribers
+      // @array paramaeter is an array of subscribers
+      function notifyAll(array) {
+        array?.map((obj) => {
+          // obj is subscription details
+          console.log(obj);
+          /*
+          setInterval(() => {
+            webpush.sendNotification(subscription, payload)
+              .then(result => console.log(result))
+              .catch(e => console.log(e.stack))
+          }, 1000 * 60 * 2)
+          */
+        })
+        res.send(array)
+      }
+
       app.get('/subs', (req, res) => {
+        res.send(JSON.parse(req.body))
         getAllSubscribers().then((result) => {
-          res.send(result)
+          // res.send(JSON.parse(result))
           console.log(result);
+          // notification function
+          notifyAll(result)
         }).catch((err) => {
           console.error(err);
         });
-        
       })
 
-      setInterval(() => {
+      /**
+       * setInterval(() => {
         webpush.sendNotification(subscription, payload)
           .then(result => console.log(result))
           .catch(e => console.log(e.stack))
       }, 1000 * 60 * 2)
-
+      */
       res.status(200).json({ 'success': true })
 
     })
