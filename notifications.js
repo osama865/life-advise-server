@@ -42,9 +42,9 @@ MongoClient.connect(url, { useUnifiedTopology: true })
       webpush.sendNotification(subscription, payload)
         .then(result => console.log(result))
         .catch(e => console.log(e.stack))
+      res.status(200).json({ 'success': true })
 
     })
-    res.status(200).json({ 'success': true })
   });
 
 app.get('/sub', (req, res) => {
