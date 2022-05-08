@@ -17,20 +17,35 @@ app.get('/', (req, res) => {
 MongoClient.connect(url, { useUnifiedTopology: true })
     .then(db => {
         app.get('/data', (req, res) => {
-            let advises = db.db(dbName).collection(collectionName).find().toArray()
-            res.send(advises)
+            db.db(dbName).collection(collectionName).find().then((result) => {
+                const advises = result
+                console.log(advises);
+                res.send(advises)
+            }).catch((err) => {
+                console.error(err);
+            });
         })
 
         app.get('/find_one', (req, res) => {
             const id = req.query.id
-            const advice = db.db(dbName).collection(collectionName).findOne({ _id: `${id}` })
-            res.send(advice)
+            db.db(dbName).collection(collectionName).findOne({ _id: `${id}` }).then((result) => {
+                const advice = result
+                console.log(advice);
+                res.send(advice)
+            }).catch((err) => {
+                console.error(err);
+            });
         })
 
         app.get('/find_first', (req, res) => {
-            const advice = db.db(dbName).collection(collectionName).findOne()
+            db.db(dbName).collection(collectionName).findOne().then((result) => {
+                const advice = result
+                console.log(advice);
+                res.send(advice)
+            }).catch((err) => {
+                console.error(err);
+            });
         })
-
     })
     .catch(error => console.error(error))
 
