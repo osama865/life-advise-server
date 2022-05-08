@@ -8,7 +8,7 @@ dotenv.config()
 app.use(cors())
 app.use(bodyParser.json())
 
-webpush.setVapidDetails(process.env.WEB_PUSH_CONTACT || "mailto: osama0000ibrahim@gmail.com", process.env.PUBLIC_VAPID_KEY || "BAHPN9XNOB9KiLT7KCnxZoJN8mLkMpG-PhNvLQShm91boF93h9RQiXY96XTTTwyRjAB6TLknbjs_Zpoohwtg-Uk", process.env.PRIVATE_VAPID_KEY || "3aGkYcoaidNC-7FG9BcFkDjsHyp9L5f8a9qcqtQg1c4")
+webpush.setVapidDetails(process.env.WEB_PUSH_CONTACT || "mailto:osama0000ibrahim@gmail.com", process.env.PUBLIC_VAPID_KEY || "BAHPN9XNOB9KiLT7KCnxZoJN8mLkMpG-PhNvLQShm91boF93h9RQiXY96XTTTwyRjAB6TLknbjs_Zpoohwtg-Uk", process.env.PRIVATE_VAPID_KEY || "3aGkYcoaidNC-7FG9BcFkDjsHyp9L5f8a9qcqtQg1c4")
 
 app.get('/', (req, res) => {
   res.send('Hello world!')
@@ -20,24 +20,35 @@ app.get('/', (req, res) => {
 // send notification to all endpoints listed
 // check notification and service worker at IOS and opera and firefox
 // visit PWA store to see if you can make it downloadable
+
+const payload = JSON.stringify({
+  title: 'Hello!',
+  body: 'It works.',
+})
+
 const url =
   "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/advice?retryWrites=true&w=majority";
 MongoClient.connect(url, { useUnifiedTopology: true })
   .then(client => {
     const db = client.db()
     const collection = db.collection("subscribers")
-    app.post('/subscribe', (req, res) => {
-      const subscription = req.body
-      collection.updateOne({}, { $set: subscription }, { upsert: true }).then((result) => {
-        console.log(result);
-      }).catch((err) => {
-        console.error(err);
-      });
 
-      const payload = JSON.stringify({
-        title: 'Hello!',
-        body: 'It works.',
-      })
+    app.post('/subscribe', (req, res) => {
+
+      const subscription = req.body
+      // first make sure no dublicate
+      collection.findOne({ endpoint: subscription.endpoint }).then((result) => {
+        // if the doc is already saved just exit
+        return ;
+      }).catch((err) => {
+        // if doc not found then add it 
+        collection.insertOne(subscription).then((result) => {
+          console.log(result);
+        }).catch((err) => {
+          console.error(err);
+        });
+      });
+      
 
       async function getAllSubscribers() {
         return await collection.find().toArray()
