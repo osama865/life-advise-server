@@ -28,7 +28,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
     const collection = db.collection("subscribers")
     app.post('/subscribe', (req, res) => {
       const subscription = req.body
-      collection.updateOne({}, subscription, { upsert: true }).then((result) => {
+      collection.updateOne({}, {$set : subscription}, { upsert: true }).then((result) => {
         console.log(result);
       }).catch((err) => {
         console.error(err);
