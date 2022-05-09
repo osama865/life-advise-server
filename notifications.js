@@ -32,6 +32,18 @@ MongoClient.connect(url, { useUnifiedTopology: true })
   .then(client => {
     const db = client.db()
     const collection = db.collection("subscribers")
+    function random() {
+      for (let i = 0; i < 5; i++) {
+        const arr = collection.aggregate([
+          { $sample: { size: 10 } }
+        ])
+
+        console.log(arr, "random doc");
+      }
+
+    }
+
+    random()
 
     app.post('/subscribe', (req, res) => {
 
@@ -41,7 +53,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
         if (err) console.error(err);
         if (res) {
           // if the doc is already saved just exit
-          console.log('doc is found', result);
+          console.log('doc is found', res);
           return;
         } else {
           // if doc not found then add it 
@@ -76,7 +88,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
       }
 
       app.get('/subs', (req, res) => {
-        res.send(JSON.parse(req.body))
+        res.send(req.body)
         getAllSubscribers().then((result) => {
           // res.send(JSON.parse(result))
           console.log(result);
