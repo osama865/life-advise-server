@@ -30,20 +30,24 @@ const url =
   "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/advice?retryWrites=true&w=majority";
 MongoClient.connect(url, { useUnifiedTopology: true })
   .then(client => {
-    const db = client.db()
-    const collection = db.collection("subscribers")
-    function random() {
-      for (let i = 0; i < 5; i++) {
-        const arr = collection.aggregate([
-          { $sample: { size: 10 } }
-        ])
-
-        console.log(arr, "random doc");
-      }
-
+    const db = client.db("life")
+    const collection = db.collection("advices")
+    // random function to get docs
+    async function random() {
+      const arr = collection.aggregate([
+        { $sample: { size: 1 } }
+      ])
+      return await arr.toArray();
     }
 
-    random()
+    app.get('/random', (req, res) => {
+      random().then((array) => {
+        res.send(array[0])
+        console.log(array[0], "random doc");
+      })
+    })
+
+
 
     app.post('/subscribe', (req, res) => {
 
