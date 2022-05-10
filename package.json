@@ -11,6 +11,8 @@
     "commit" : "git add . && git commit -m $M",
     "log" :"heroku logs --tail",
     "push":"git push heroku master",
-    "all" : "npm run push && npm run log"
+    "all" : "npm run push && npm run log",
+    "branch" : "git checkout -b $BRANCH_NAME",
+    "merge" : "git checkout master && git merge $BRANCH_NAME"
   }
 }

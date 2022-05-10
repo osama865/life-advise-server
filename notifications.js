@@ -3,10 +3,13 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const webpush = require('web-push')
 const { MongoClient } = require("mongodb");
-const app = require('.');
+const express = require('express');
+const { advises } = require('.');
+const app = express()
 dotenv.config()
 app.use(cors())
 app.use(bodyParser.json())
+const port = process.env.PORT || 3002
 
 webpush.setVapidDetails(process.env.WEB_PUSH_CONTACT || "mailto:osama0000ibrahim@gmail.com", process.env.PUBLIC_VAPID_KEY || "BAHPN9XNOB9KiLT7KCnxZoJN8mLkMpG-PhNvLQShm91boF93h9RQiXY96XTTTwyRjAB6TLknbjs_Zpoohwtg-Uk", process.env.PRIVATE_VAPID_KEY || "3aGkYcoaidNC-7FG9BcFkDjsHyp9L5f8a9qcqtQg1c4")
 
@@ -40,13 +43,35 @@ MongoClient.connect(url, { useUnifiedTopology: true })
       return await arr.toArray();
     }
 
+    async function multiple(skip, limit) {
+      const arr = collection.find().skip(skip).limit(limit)
+      return await arr.toArray();
+    }
+
     app.get('/random', (req, res) => {
       random().then((array) => {
         res.send(array[0])
         console.log(array[0], "random doc");
+      }).catch(err => {
+        console.log(err);
       })
     })
 
+    app.get('/multiple', (req, res) => {
+      const skip = parseInt(req.query.skip)
+      const limit = parseInt(req.query.limit)
+      multiple(skip, limit).then((array) => {
+        res.send(array)
+        console.log(array, "10 docs");
+        console.log(req.query);
+      }).catch(err => {
+        res.send(advises)
+      })
+      /**
+       * 
+      
+       */
+    })
 
 
     app.post('/subscribe', (req, res) => {
@@ -117,4 +142,8 @@ MongoClient.connect(url, { useUnifiedTopology: true })
 
 app.get('/sub', (req, res) => {
   console.log(req.body);
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
 })

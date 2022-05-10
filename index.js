@@ -70,6 +70,6 @@ MongoClient.connect(url, { useUnifiedTopology: true })
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
-
+exports.advises = advs
 module.exports = app
 
