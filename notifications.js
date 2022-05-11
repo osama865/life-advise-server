@@ -4,7 +4,6 @@ const cors = require('cors')
 const webpush = require('web-push')
 const { MongoClient } = require("mongodb");
 const express = require('express');
-const { advises } = require('.');
 const app = express()
 dotenv.config()
 app.use(cors())
@@ -65,7 +64,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
         console.log(array, "10 docs");
         console.log(req.query);
       }).catch(err => {
-        res.send(advises)
+        res.send('s')
       })
       /**
        * 
