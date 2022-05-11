@@ -100,10 +100,10 @@ MongoClient.connect(url, { useUnifiedTopology: true })
 
       // a function to send notification to all subscribers
       // @array paramaeter is an array of subscribers
-      function notifyAll(array) {
-        array?.map((obj) => {
-          // obj is subscription details
-          console.log(obj);
+      function notifyAll(subscribers) {
+        subscribers?.map((endpoint) => {
+          // endpoint is subscription details
+          console.log(endpoint);
           /*
           setInterval(() => {
             webpush.sendNotification(subscription, payload)
@@ -112,7 +112,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
           }, 1000 * 60 * 2)
           */
         })
-        res.send(array)
+        res.send(subscribers)
       }
 
       app.get('/subs', (req, res) => {
