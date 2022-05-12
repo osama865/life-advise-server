@@ -47,6 +47,10 @@ MongoClient.connect(url, { useUnifiedTopology: true })
       return await arr.toArray();
     }
 
+    app.get('/', (req, res) => {
+      res.send('Hello world!')
+    })    
+
     app.get('/random', (req, res) => {
       random().then((array) => {
         res.send(array[0])
@@ -57,7 +61,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
     })
 
     app.get('/multiple', (req, res) => {
-      const skip = parseInt(req.query.skip)
+      const skip = parseInt(req.query.skip.trim())
       const limit = parseInt(req.query.limit)
       multiple(skip, limit).then((array) => {
         res.send(array)
