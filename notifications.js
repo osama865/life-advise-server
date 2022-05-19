@@ -9,9 +9,9 @@ dotenv.config()
 app.use(cors())
 app.use(bodyParser.json())
 const port = process.env.PORT || 3002
-const hours = 28800;
-const milliseconds = 1000;
-const time = milliseconds * hours;
+
+// six hours
+const time = 21600000;
 
 /**
  function generateVAPIDKeys() {
@@ -39,6 +39,7 @@ app.get('/', (req, res) => {
 // visit PWA store to see if you can make it downloadable
 
 const payload = JSON.stringify({ _id: "61d553b2f7e27f9a58952f20", text: "Most of what matters in our lives takes place in our absence.", author: "Salman Rushdie", date: "2021-11-30T08:02:42.027Z", index: 0, language: "en" })
+const wellcoming = JSON.stringify({ _id: "00000", text: "Hey, you'll be receiving advices via notifications like this a couple times a day, click save to save it in saved page so you can have it, or open to open it in the app.  ", author: "App's owner Osama", date: Date.now(), language: "en" })
 /**
  * firstc
  */
@@ -88,17 +89,9 @@ MongoClient.connect(url, { useUnifiedTopology: true })
         })
       })
 
-
     }, 1000 * 60)
 
-    function notifyAll(subscribers = []) {
 
-      subscribers?.map((endpoint) => {
-        // endpoint is subscription details
-        // console.log(endpoint);
-      })
-      res.send(subscribers)
-    }
 
     app.get('/', (req, res) => {
       res.send('Hello world!')
@@ -125,8 +118,6 @@ MongoClient.connect(url, { useUnifiedTopology: true })
       })
     })
 
-
-
     app.post('/subscribe', (req, res) => {
       const subscription = req.body
       // first make sure no dublicate
@@ -144,35 +135,14 @@ MongoClient.connect(url, { useUnifiedTopology: true })
           }).catch((err) => {
             console.error(err);
           });
+          // send wellcoming message
+          webpush.sendNotification(subscription, wellcoming)
+            .then(result => console.log(result))
+            .catch(e => console.log("error ", e.stack))
         }
       })
     })
-    /**
-     * 
 
-    setInterval(() => {
-        webpush.sendNotification(subscription, payload)
-          .then(result => console.log(result))
-          .catch(e => console.log("error ", e.stack))
-      }, 1000 * 50)
- 
-      app.get('/subs', (req, res) => {
-        res.send(req.body)
-        getRandomAdvice()
-        getAllSubscribers().then((result) => {
-          // res.send(JSON.parse(result))
-          console.log(result);
-          // notification function
-          //notifyAll(result)
-        }).catch((err) => {
-          console.error(err);
-        });
-      })
- 
-      res.status(200).json({ 'success': true })
- 
-    })
-     */
   }).catch(err => {
     console.error(err);
   });
@@ -204,4 +174,13 @@ app.listen(port, () => {
 setInterval(function() {
     http.get("http://<your app name>.herokuapp.com");
 }, 300000); // every 5 minutes (300000)
+
+function notifyAll(subscribers = []) {
+
+      subscribers?.map((endpoint) => {
+        // endpoint is subscription details
+        // console.log(endpoint);
+      })
+      res.send(subscribers)
+    }
  */
