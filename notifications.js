@@ -6,7 +6,9 @@ const { MongoClient } = require("mongodb");
 const express = require('express');
 const app = express()
 dotenv.config()
-app.use(cors())
+app.use(cors({
+  origin: ["https://life-advise.netlify.app/", 'https://www.google.com/', "http://localhost:3000/"]
+}))
 app.use(bodyParser.json())
 const port = process.env.PORT || 3002
 
