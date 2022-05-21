@@ -39,7 +39,9 @@ app.get('/', (req, res) => {
 // visit PWA store to see if you can make it downloadable
 
 const payload = JSON.stringify({ _id: "61d553b2f7e27f9a58952f20", text: "Most of what matters in our lives takes place in our absence.", author: "Salman Rushdie", date: "2021-11-30T08:02:42.027Z", index: 0, language: "en" })
-const wellcoming = JSON.stringify({ _id: "00000", text: "Hey, you'll be receiving advices via notifications like this a couple times a day, click save to save it in saved page so you can have it, or open to open it in the app.  ", author: "App's owner Osama", date: Date.now(), language: "en" })
+const wellcoming = JSON.stringify({ _id: "unsubscribe", text: "Hey, you'll be receiving advices via notifications like this a couple times a day, click save to save it in saved page so you can have it, To unsubscribe to this advices notifications click unsubscribe button.  ", author: "App's owner Osama", date: Date.now(), language: "en" })
+const resubscribing = JSON.stringify({ _id: "subscribe", text: "You are no longer receiving Notifications, to re-subscribe again please press the subscribe button.", author: "App's owner Osama", date: Date.now(), language: "en" })
+
 /**
  * firstc
  */
@@ -63,6 +65,21 @@ MongoClient.connect(url, { useUnifiedTopology: true })
     async function multiple(skip, limit) {
       const arr = collection.find().skip(skip).limit(limit)
       return await arr.toArray();
+    }
+
+    const sendNotification = (subscription, data) => {
+      webpush.sendNotification(subscription, data)
+        .then(result => console.log(result))
+        .catch(e => console.error(e.stack))
+    }
+
+    async function unsubscribe(subscription) {
+      subscribersCollection.findOneAndDelete(subscription).then((result) => {
+        sendNotification(subscription, resubscribing)
+        console.log(result);
+      }).catch((err) => {
+        console.log(err);
+      });
     }
 
     async function getAllSubscribers() {
@@ -141,6 +158,12 @@ MongoClient.connect(url, { useUnifiedTopology: true })
             .catch(e => console.log("error ", e.stack))
         }
       })
+    })
+
+    app.post('/unsubscribe', (req, res) => {
+      const subscription = req.body
+      // first make sure no dublicate
+      unsubscribe(subscription)
     })
 
   }).catch(err => {
