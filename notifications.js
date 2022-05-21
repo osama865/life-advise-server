@@ -7,7 +7,7 @@ const express = require('express');
 const app = express()
 dotenv.config()
 app.use(cors({
-  origin: ["https://life-advise.netlify.app/", 'https://www.google.com/', "http://localhost:3000/"]
+  origin: '*'
 }))
 app.use(bodyParser.json())
 const port = process.env.PORT || 3002
