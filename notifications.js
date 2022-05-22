@@ -7,7 +7,6 @@ const express = require('express');
 const app = express()
 dotenv.config()
 
-app.use(cors())
 
 app.use(bodyParser.json())
 const port = process.env.PORT || 3002
@@ -18,18 +17,21 @@ const time = 21600000;
 
 /**
  function generateVAPIDKeys() {
-  const vapidKeys = webpush.generateVAPIDKeys();
-
-  return {
-    publicKey: vapidKeys.publicKey,
-    privateKey: vapidKeys.privateKey,
-  };
-}
-
-save it in db
- */
+   const vapidKeys = webpush.generateVAPIDKeys();
+   
+   return {
+     publicKey: vapidKeys.publicKey,
+     privateKey: vapidKeys.privateKey,
+    };
+  }
+  
+  save it in db
+  */
 webpush.setVapidDetails(process.env.WEB_PUSH_CONTACT || "mailto:osama0000ibrahim@gmail.com", process.env.PUBLIC_VAPID_KEY || "BAHPN9XNOB9KiLT7KCnxZoJN8mLkMpG-PhNvLQShm91boF93h9RQiXY96XTTTwyRjAB6TLknbjs_Zpoohwtg-Uk", process.env.PRIVATE_VAPID_KEY || "3aGkYcoaidNC-7FG9BcFkDjsHyp9L5f8a9qcqtQg1c4")
 
+app.use(cors({
+  origin : "*"
+}))
 app.get('/', (req, res) => {
   res.send('Hello world!')
 })
