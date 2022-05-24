@@ -1,75 +1,219 @@
-const express = require('express')
-const app = express()
+const dotenv = require('dotenv')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const webpush = require('web-push')
 const { MongoClient } = require("mongodb");
-require('./notifications')
-const port = process.env.PORT || 3001
-const url =
-    "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
+const express = require('express');
+var http = require("http");
+const app = express()
+dotenv.config()
 
-// var db;
-let collectionName = "advices";
-let dbName = "life";
-let advs = [
-    { _id: "61d553b2f7e27f9a58952f20", text: "Most of what matters in our lives takes place in our absence.", author: "Salman Rushdie", date: "2021-11-30T08:02:42.027Z", index: 0, language: "en" },
-    { _id: "61d553b2f7e27f9a58952f21", text: "Human happiness and moral duty are inseparably connected.", author: "George Washington", date: "2021-11-30T08:02:42.065Z", index: 1, language: "en" },
-    { _id: "61d553b2f7e27f9a58952f22", text: "No better words than \"thank you\" have yet been discovered to express the sincere gratitude of one's heart, when the two words are sincerely spoken.", author: "Alfred Montapert", date: "2021-11-30T08:02:42.077Z", index: 2, language: "en" },
-    { _id: "61d553b2f7e27f9a58952f23", text: "Poetry is just the evidence of life. If your life is burning well, poetry is just the ash.", author: "Leonard Cohen", date: "2021-11-30T08:02:42.080Z", index: 3, language: "en" },
-    { _id: "61d553b2f7e27f9a58952f24", text: "The moment a little boy is concerned with which is a jay and which is a sparrow, he can no longer see the birds or hear them sing.", author: "Eric Berne", date: "2021-11-30T08:02:42.083Z", index: 4, language: "en" },
-    { _id: "61d553b2f7e27f9a58952f25", text: "Love is never wrong no matter what society says.", author: "Anthony T.Hincks", date: "2021-11-30T08:02:42.087Z", index: 5, language: "en" },
-    { _id: "61d553b2f7e27f9a58952f26", text: "It is not reputation, wealth, fame, success or religiosity that glorifies God. It's slavery.", author: "indonesia123", date: "2021-11-30T08:02:42.090Z", index: 6, language: "en" },
-    { _id: "61d553b2f7e27f9a58952f27", text: "Some things in life are too complicated to explain in any language.", author: "Haruki Murakami", date: "2021-11-30T08:02:42.094Z", index: 7, language: "en" },
-    { _id: "61d553b2f7e27f9a58952f28", text: "To succeed in the new year, you have to set your priority right, pursue your goals with zeal and do away with procrastination.", author: "Bamigboye Olurotimi", date: "2021-11-30T08:02:42.097Z", index: 8, language: "en" },
-    { _id: "61d553b2f7e27f9a58952f29", text: "Remember, you are not aspiring for perfection, Bombshell. You are aspiring for progress, one step at a time.", author: "Amber Hurdle", date: "2021-11-30T08:02:42.101Z", index: 9, language: "en" }
-]
 
+app.use(bodyParser.json())
+const port = process.env.PORT || 3002
+
+// keep alive
+setInterval(function () {
+    http.get("https://life-advise-server.herokuapp.com/");
+}, 1200000); // every 20 minutes (1200000)
+
+// 8 hours
+const time = 28800000;
+
+/**
+ function generateVAPIDKeys() {
+   const vapidKeys = webpush.generateVAPIDKeys();
+   
+   return {
+     publicKey: vapidKeys.publicKey,
+     privateKey: vapidKeys.privateKey,
+    };
+  }
+  
+  save it in db
+  */
+webpush.setVapidDetails(process.env.WEB_PUSH_CONTACT || "mailto:osama0000ibrahim@gmail.com", process.env.PUBLIC_VAPID_KEY || "BAHPN9XNOB9KiLT7KCnxZoJN8mLkMpG-PhNvLQShm91boF93h9RQiXY96XTTTwyRjAB6TLknbjs_Zpoohwtg-Uk", process.env.PRIVATE_VAPID_KEY || "3aGkYcoaidNC-7FG9BcFkDjsHyp9L5f8a9qcqtQg1c4")
+
+app.use(cors({
+    origin: "*"
+}))
 app.get('/', (req, res) => {
-    res.send('hey')
+    res.send('Hello world!')
 })
+
+// route for registering
+// insert registeration data on collection ("subscribers")
+// when sending notification retrive all subscribers endpoints
+// send notification to all endpoints listed
+// check notification and service worker at IOS and opera and firefox
+// visit PWA store to see if you can make it downloadable
+
+const payload = JSON.stringify({ _id: "61d553b2f7e27f9a58952f20", text: "Most of what matters in our lives takes place in our absence.", author: "Salman Rushdie", date: "2021-11-30T08:02:42.027Z", index: 0, language: "en" })
+const wellcoming = JSON.stringify({ _id: "unsubscribe", text: "Hey, you'll be receiving advices via notifications like this a couple times a day, click save to save it in saved page so you can have it, To unsubscribe to this advices notifications click unsubscribe button.  ", author: "App's owner Osama", date: Date.now(), language: "en" })
+const resubscribing = JSON.stringify({ _id: "subscribe", text: "You are no longer receiving Notifications, to re-subscribe again please press the subscribe button.", author: "App's owner Osama", date: Date.now(), language: "en" })
+
+/**
+ * firstc
+ */
+
+const url =
+    "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/advice?retryWrites=true&w=majority";
+
 MongoClient.connect(url, { useUnifiedTopology: true })
-    .then(db => {
-        app.get('/data', (req, res) => {
-            res.send(advs)
-            /**
-             db.db(dbName).collection(collectionName).find().toArray().then((result) => {
-                const advises = result
-                res.send(advises)
+    .then(client => {
+        const db = client.db("life")
+        const collection = db.collection("advices")
+        const subscribersCollection = db.collection("subscribers")
+        // random function to get docs
+        async function random() {
+            const arr = collection.aggregate([
+                { $sample: { size: 1 } }
+            ])
+            return await arr.toArray();
+        }
+
+        async function multiple(skip, limit) {
+            const arr = collection.find().skip(skip).limit(limit)
+            return await arr.toArray();
+        }
+
+        const sendNotification = (subscription, data) => {
+            webpush.sendNotification(subscription, data)
+                .then(result => console.log(result))
+                .catch(e => console.error(e.stack))
+        }
+
+        async function unsubscribe(subscription) {
+            subscribersCollection.findOneAndDelete(subscription).then((result) => {
+                sendNotification(subscription, resubscribing)
+                console.log(result);
             }).catch((err) => {
-                console.error(err);
+                console.log(err);
             });
-            */
-            
+        }
+
+        async function getAllSubscribers() {
+            return await subscribersCollection.find().toArray()
+        }
+
+
+        // a function to send notification to all subscribers
+        // @array paramaeter is an array of subscribers
+        // fetch random quote every x seconds
+        // get all subscribers 
+        // send the quote to every subscriber's endpoint
+        setInterval(async () => {
+            random().then(advice => {
+                console.log("iam advice hello", advice[0]);
+
+                getAllSubscribers().then((subs) => {
+                    subs?.map(sub => {
+                        console.log("iam sub hello", sub);
+                        webpush.sendNotification(sub, JSON.stringify(advice[0]))
+                            .then(result => console.log(result))
+                            .catch(e => console.error(e.stack))
+                    })
+                })
+            })
+
+        }, time)
+
+
+
+        app.get('/', (req, res) => {
+            res.send('Hello world!')
         })
 
-        app.get('/find_one', (req, res) => {
-            const id = req.query.id
-            db.db(dbName).collection(collectionName).findOne({ _id: `${JSON.parse(id)}` }).then((result) => {
-                const advice = result
-                console.log(id);
-                res.send(advice)
-                res.send(id)
-            }).catch((err) => {
+        app.get('/random', (req, res) => {
+            random().then((array) => {
+                res.send(array[0])
+                // console.log(array[0], "random doc");
+            }).catch(err => {
                 console.error(err);
-            });
+            })
         })
 
-        app.get('/find_first', (req, res) => {
-            db.db(dbName).collection(collectionName).findOne().then((result) => {
-                const advice = result
-                console.log(advice);
-                res.send(advice)
-            }).catch((err) => {
-                console.error(err);
-            });
+        app.get('/multiple', (req, res) => {
+            const skip = parseInt(req.query.skip.trim())
+            const limit = parseInt(req.query.limit)
+            multiple(skip, limit).then((array) => {
+                res.send(array)
+                console.log(array, "10 docs");
+                console.log(req.query);
+            }).catch(err => {
+                res.send('s')
+            })
         })
-    })
-    .catch(error => console.error(error))
 
+        app.post('/subscribe', (req, res) => {
+            const subscription = req.body
+            // first make sure no dublicate
+            subscribersCollection.findOne(subscription, {}, (err, res) => {
+                if (err) console.error(err);
+                if (res) {
+                    // if the doc is already saved just exit
+                    console.log('doc is found', res);
+                    return;
+                } else {
+                    // if doc not found then add it 
+                    console.log('doc not found and will be inserted');
+                    subscribersCollection.insertOne(subscription).then((result) => {
+                        console.log(result);
+                    }).catch((err) => {
+                        console.error(err);
+                    });
+                    // send wellcoming message
+                    webpush.sendNotification(subscription, wellcoming)
+                        .then(result => console.log(result))
+                        .catch(e => console.log("error ", e.stack))
+                }
+            })
+        })
 
-// 61d553b2f7e27f9a58952f20 
+        app.post('/unsubscribe', (req, res) => {
+            const subscription = req.body
+            // first make sure no dublicate
+            unsubscribe(subscription)
+        })
+
+    }).catch(err => {
+        console.error(err);
+    });
+
+app.get('/sub', (req, res) => {
+    console.log("iam sub hellossssssssssssssssss", req.body);
+})
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
-exports.advises = advs
-module.exports = app
 
+/**
+ const getRandomAdvice = () => {
+        let advice;
+        random().then((array) => {
+          advice = array[0]
+          // res.send(array[0])
+        }).catch(err => {
+          console.log(err);
+        })
+        return advice
+      }
+
+      console.log(getRandomAdvice());
+
+
+      var http = require("http");
+setInterval(function() {
+    http.get("http://<your app name>.herokuapp.com");
+}, 300000); // every 5 minutes (300000)
+
+function notifyAll(subscribers = []) {
+
+      subscribers?.map((endpoint) => {
+        // endpoint is subscription details
+        // console.log(endpoint);
+      })
+      res.send(subscribers)
+    }
+ */

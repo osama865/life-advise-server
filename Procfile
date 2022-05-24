@@ -1,1 +1,1 @@
-web: node notifications.js
+web: node index.js
