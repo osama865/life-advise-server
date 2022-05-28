@@ -116,7 +116,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
                 })
             })
 
-        }, time)
+        }, 1000* 60)
 
 
 
