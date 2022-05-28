@@ -2,11 +2,17 @@ const dotenv = require('dotenv')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const webpush = require('web-push')
+const schedule = require('node-schedule')
 const { MongoClient } = require("mongodb");
 const express = require('express');
 var http = require("http");
 const app = express()
 dotenv.config()
+
+const rule = new schedule.RecurrenceRule()
+rule.hour = 6;
+rule.minute = 5;
+
 
 
 app.use(bodyParser.json())
@@ -102,6 +108,8 @@ MongoClient.connect(url, { useUnifiedTopology: true })
         // fetch random quote every x seconds
         // get all subscribers 
         // send the quote to every subscriber's endpoint
+        
+        /*
         setInterval(async () => {
             random().then(advice => {
                 console.log("iam advice hello", advice[0]);
@@ -116,9 +124,29 @@ MongoClient.connect(url, { useUnifiedTopology: true })
                 })
             })
 
-        }, 1000* 60)
+        }, 1000 * 60)
+        */
 
 
+        const job = schedule.scheduleJob('50 */3 * * *', function () {
+            random().then(advice => {
+                console.log("iam advice hello", advice[0]);
+
+                getAllSubscribers().then((subs) => {
+                    subs?.map(sub => {
+                        console.log("iam sub hello", sub);
+                        webpush.sendNotification(sub, JSON.stringify(advice[0]))
+                            .then(result => console.log(result))
+                            .catch(e => console.error(e.stack))
+                    })
+                })
+            })
+        });
+
+
+        const notifications = schedule.scheduleJob("push  every 8 hours", rule, function () {
+            console.log("im scheduled message");
+        })
 
         app.get('/', (req, res) => {
             res.send('Hello world!')
