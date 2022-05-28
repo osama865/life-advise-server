@@ -18,7 +18,7 @@ setInterval(function () {
 }, 1200000); // every 20 minutes (1200000)
 
 // 8 hours
-const time = 28800000;
+const time = 1000 * 60;
 
 /**
  function generateVAPIDKeys() {
