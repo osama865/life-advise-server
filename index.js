@@ -142,6 +142,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
                 })
             })
         });
+        job.invoke()
 
 
         const notifications = schedule.scheduleJob("push  every 8 hours", rule, function () {
