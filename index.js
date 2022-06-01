@@ -5,7 +5,7 @@ const webpush = require('web-push')
 const schedule = require('node-schedule')
 const { MongoClient } = require("mongodb");
 const express = require('express');
-var http = require("http");
+var https = require("https");
 const app = express()
 dotenv.config()
 
@@ -19,12 +19,14 @@ app.use(bodyParser.json())
 const port = process.env.PORT || 3002
 
 // keep alive
-setInterval(function () {
-    http.get("https://life-advise-server.herokuapp.com/");
+/**
+ * setInterval(function () {
+    https.get("https://life-advise-server.herokuapp.com/");
 }, 1200000); // every 20 minutes (1200000)
 
+ */
 // 8 hours
-const time = 1000 * 60;
+const time = 1000 * 60 * 60;
 
 /**
  function generateVAPIDKeys() {
@@ -35,7 +37,20 @@ const time = 1000 * 60;
      privateKey: vapidKeys.privateKey,
     };
   }
+  Hey,
+my application is https://life-advise-server.herokuapp.com/
+  this app is hosted on heruko, the free plan and the account isn't verified yet (didn't add a credit card)
+  it's working good and everything, except Sudanese can not access the app, due to sanctions on Sudan.
+I found this info in your policy and terms https://www.heroku.com/policy/heroku-elements-terms
+
+1.4 Export Laws. The Heroku Elements and derivatives thereof may be subject to export laws and regulations of the United States and other jurisdictions. You represent that you are not named on any U.S. government denied-party list and will not permit any user to access or use any Heroku Elements in a U.S.-embargoed country or region (currently Cuba, Iran, North Korea, Sudan, Syria or Crimea) or in violation of any U.S. export law or regulation.  not permit any user to access or use any Heroku Elements in the U.S.
+  -embargoed country or region (currently Cuba, Iran, North Korea, Sudan, Syria or Crimea) 
+  or in violation of any U.S. export law or regulation. 
   
+  all my app do is fetching data and sending notifications, this data does not involve any criminal work or any political issues
+
+how can I make my app available for Sudan? 
+Thanks.
   save it in db
   */
 webpush.setVapidDetails(process.env.WEB_PUSH_CONTACT || "mailto:osama0000ibrahim@gmail.com", process.env.PUBLIC_VAPID_KEY || "BAHPN9XNOB9KiLT7KCnxZoJN8mLkMpG-PhNvLQShm91boF93h9RQiXY96XTTTwyRjAB6TLknbjs_Zpoohwtg-Uk", process.env.PRIVATE_VAPID_KEY || "3aGkYcoaidNC-7FG9BcFkDjsHyp9L5f8a9qcqtQg1c4")
@@ -62,6 +77,10 @@ const resubscribing = JSON.stringify({ _id: "subscribe", text: "You are no longe
  * firstc
  */
 
+app.get('/push', (req, res) => {
+    res.send('its the sign to push notifications to our lovley users!')
+})
+
 const url =
     "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/advice?retryWrites=true&w=majority";
 
@@ -81,6 +100,15 @@ MongoClient.connect(url, { useUnifiedTopology: true })
         async function multiple(skip, limit) {
             const arr = collection.find().skip(skip).limit(limit)
             return await arr.toArray();
+        }
+
+        async function removeSubscripers() {
+            let count;
+            subscribersCollection.deleteMany().then(result => {
+                count = result.deletedCount
+                console.log(result.deletedCount);
+            })
+            return count
         }
 
         const sendNotification = (subscription, data) => {
@@ -108,8 +136,6 @@ MongoClient.connect(url, { useUnifiedTopology: true })
         // fetch random quote every x seconds
         // get all subscribers 
         // send the quote to every subscriber's endpoint
-        
-        /*
         setInterval(async () => {
             random().then(advice => {
                 console.log("iam advice hello", advice[0]);
@@ -123,12 +149,9 @@ MongoClient.connect(url, { useUnifiedTopology: true })
                     })
                 })
             })
-
-        }, 1000 * 60)
-        */
-
-
-        const job = schedule.scheduleJob('50 */3 * * *', function () {
+        }, 1000 * 60 * 60 * 8)
+        /*
+         const job = schedule.scheduleJob('50 * /3 * * *', function () {
             random().then(advice => {
                 console.log("iam advice hello", advice[0]);
 
@@ -143,9 +166,14 @@ MongoClient.connect(url, { useUnifiedTopology: true })
             })
         });
         job.invoke()
+        */
 
         app.get('/', (req, res) => {
             res.send('Hello world!')
+        })
+
+        app.get('/push', (req, res) => {
+            res.send('its the sign to push notifications to our lovley users!')
         })
 
         app.get('/random', (req, res) => {
@@ -241,3 +269,18 @@ function notifyAll(subscribers = []) {
       res.send(subscribers)
     }
  */
+/**
+ * https://life-advise-server.herokuapp.com/
+  server for https://life-advise.netlify.app/
+  this server hosted on heruko, the free plan and the account is't vervied yet (didn't add credit card)
+  it's working good and everything, ecept sudanese can not access the server, due to sanctions on sudan
+  1.4 Export Laws.
+  The Heroku Elements and derivatives thereof may be subject to export laws and regulations of the United States
+  and other jurisdictions. You represent that you are not named on any U.S.
+  government denied-party list and will not permit any user to access or use any Heroku Elements in a U.S.
+  -embargoed country or region (currently Cuba, Iran, North Korea, Sudan, Syria or Crimea)
+  or in violation of any U.S. export law or regulation.
+
+  all my server is doing is fetching data and send notification, this data do not envolv with any criminal work
+  or any politicion proplems
+*/
