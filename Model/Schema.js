@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
      connectionsAmount,
      date,
      email
-     
+
  }
  */
 const UserSchema = new mongoose.Schema({
@@ -34,5 +34,10 @@ const UserSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", UserSchema);
+try {
+    User.createCollection("users")
+} catch (error) {
+
+}
 
 module.exports = User;

@@ -1,8 +1,8 @@
 /**
  * datatbase connection and its percuders lay here
  */
+
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
 const url =
   "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
 
@@ -17,9 +17,7 @@ db.once("open", function () {
   console.log("Connected successfully");
 });
 
-exports = {
-  db
-}
+
 
 /**
  * let advises = [];

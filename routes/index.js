@@ -6,19 +6,26 @@
 */
 const Router = require("express").Router();
 const app = require('express')()
-const { register } = require("../Controllers")
+const { register, check } = require("../Controllers")
 const cors = require('cors');
 app.use(cors())
 const bodyParser = require("body-parser");
+const { verfy } = require("../Services");
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
     extended: true
 }))
 
 Router.post('/register', register)
-Router.get('/', register)
+Router.post('/check', check )
+Router.get('/', (req,res)=>{
+    res.send('hello')
+})
 
 app.use(Router)
+
+
 app.listen(3003, () => {
     console.log('hey');
 })
