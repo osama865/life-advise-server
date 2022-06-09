@@ -6,7 +6,7 @@
 */
 const Router = require("express").Router();
 const app = require('express')()
-const { register, check } = require("../Controllers")
+const { register, fetchOne } = require("../Controllers")
 const cors = require('cors');
 app.use(cors())
 const bodyParser = require("body-parser");
@@ -18,8 +18,13 @@ app.use(bodyParser.urlencoded({
 }))
 
 Router.post('/register', register)
-Router.post('/check', check)
-Router.post('/one', check)
+
+Router.post('/check', (req, res) => {
+    console.log(req.body);
+})
+
+Router.post('/one', fetchOne)
+
 Router.post('/multiple', (req, res) => {
     console.log(req.body);
 })
