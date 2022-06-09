@@ -18,8 +18,14 @@ app.use(bodyParser.urlencoded({
 }))
 
 Router.post('/register', register)
-Router.post('/check', check )
-Router.get('/', (req,res)=>{
+Router.post('/check', check)
+Router.post('/one', check)
+Router.post('/multiple', (req, res) => {
+    console.log(req.body);
+})
+
+
+Router.get('/', (req, res) => {
     res.send('hello')
 })
 

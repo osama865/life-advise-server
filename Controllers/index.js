@@ -38,7 +38,6 @@ const register = async (req, res, next) => {
 }
 
 const check = async (req, res, next) => {
-    const name = req.body.name
     const providedAuthKey = req.body.authKey
     const OK = {
         message: `You are authenticated, you can use the api as you want.`,
@@ -49,15 +48,14 @@ const check = async (req, res, next) => {
         message: `You are not authenticated, you can't use this api.`,
         secret: "i'm the secret flag, only choosen will obtain me."
     }
-    
-   
+
+
     // addUser()
     const userData = {
-        name: name,
         authKey: providedAuthKey,
     }
-    verfy(userData).then((vrefied)=>{
-        vrefied === true ? res.send(OK) : res.send(NotOK);
+    verfy(userData).then((data) => {
+        data === undefined ? res.send(NotOK) : res.send(data[0]);
     })
 }
 
@@ -79,6 +77,6 @@ db.once("open", function () {
 });
 
 module.exports = {
-    register, 
+    register,
     check
 }
