@@ -1,4 +1,4 @@
-const { addUser, verfy, fetchRandom } = require("../Services");
+const { addUser, verfy, fetch_random, fetch_multiple } = require("../Services");
 const { uuid } = require("../Services/generateAuthKey");
 const { hashCode } = require("../Services/hashing");
 const mongoose = require("mongoose");
@@ -14,6 +14,21 @@ const mongoose = require("mongoose");
  * Create a user in our database.
  * And finally, create a signed JWT token.
 */
+
+const OK = {
+    message: `You are authenticated, you can use the api as you want.`,
+    secret: "i'm the secret flag, only choosen like you will obtain me."
+}
+const NotOK = {
+    message: `You are not authenticated, you can't use this api.`,
+    secret: "i'm the secret flag, only choosen will obtain me."
+}
+
+const error = {
+    message: "Sorry, some error happend",
+    error: ""
+}
+
 const register = async (req, res, next) => {
     console.log('im the controller', req.body);
     const name = req.body.name
@@ -27,39 +42,26 @@ const register = async (req, res, next) => {
     }
     console.log(response, 'shshsh');
     // addUser()
-    const userData = {
+    const reqData = {
         name: name,
         hashedPassword: hashedPassword,
         authKey,
         email: "osama@gmail.com",
     }
-    addUser(userData)
+    addUser(reqData)
     res.send(response)
 }
 
 const fetchOne = async (req, res, next) => {
     const providedAuthKey = req.body.authKey
-    const OK = {
-        message: `You are authenticated, you can use the api as you want.`,
-        secret: "i'm the secret flag, only choosen like you will obtain me."
-    }
-    const NotOK = {
-        message: `You are not authenticated, you can't use this api.`,
-        secret: "i'm the secret flag, only choosen will obtain me."
-    }
-
-    const error = {
-        message: "Sorry, some error happend",
-        error: "erorrrrrrrrrrrrrr"
-    }
-    const userData = {
+    const reqData = {
         authKey: providedAuthKey,
     }
-    verfy(userData).then((data) => {
+    verfy(reqData).then((data) => {
         if (data === undefined) {
             res.send(NotOK)
         } else {
-            fetchRandom().then((result) => {
+            fetch_random().then((result) => {
                 res.send(result[0])
             }).catch((err) => {
                 res.send(error)
@@ -71,34 +73,25 @@ const fetchOne = async (req, res, next) => {
 const fetchMultiple = async (req, res, next) => {
     const providedAuthKey = req.body.authKey
     const skip = req.body.skip
-    const lim = req.body.limit
-    const OK = {
-        message: `You are authenticated, you can use the api as you want.`,
-        secret: "i'm the secret flag, only choosen like you will obtain me."
-    }
-    const NotOK = {
-        message: `You are not authenticated, you can't use this api.`,
-        secret: "i'm the secret flag, only choosen will obtain me."
-    }
+    const limit = req.body.limit
 
-    const error = {
-        message: "Sorry, some error happend",
-        error: ""
-    }
-    const userData = {
+    const reqData = {
         authKey: providedAuthKey,
+        skip,
+        limit
     }
 
-    verfy(userData).then((data) => {
+    verfy(reqData).then((data) => {
         if (data === undefined) {
             res.send(NotOK)
         } else {
-            fetchRandom().then((result) => {
+            fetch_multiple(reqData).then((result) => {
                 res.send(result)
             }).catch((err) => {
+                error.error = err
+                console.log(err);
                 res.send(error)
             });
-
         }
     })
 }
@@ -120,5 +113,6 @@ db.once("open", function () {
 
 module.exports = {
     register,
-    fetchOne
+    fetchOne,
+    fetchMultiple
 }

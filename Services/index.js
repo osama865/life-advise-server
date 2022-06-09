@@ -28,7 +28,12 @@ exports.verfy = async (userData = {}) => {
     }
 }
 
-exports.fetchRandom = async () => {
+exports.fetch_random = async () => {
     // later change the size to dynamic size.
     return await db.collection("advices").aggregate([{ $sample: { size: 1 } }]).toArray()
+}
+
+exports.fetch_multiple = async ({ skip, limit }) => {
+    // later change the size to dynamic size.
+    return await db.collection("advices").find({}, { skip : skip, limit:limit }).toArray()
 }
