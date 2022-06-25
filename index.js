@@ -97,7 +97,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
             return await arr.toArray();
         }
 
-        async function multiple(skip, limit) {
+        async function multiple({skip, limit}) {
             const arr = collection.find().skip(skip).limit(limit)
             return await arr.toArray();
         }
@@ -185,10 +185,10 @@ MongoClient.connect(url, { useUnifiedTopology: true })
             })
         })
 
-        app.get('/multiple', (req, res) => {
-            const skip = parseInt(req.query.skip.trim())
-            const limit = parseInt(req.query.limit)
-            multiple(skip, limit).then((array) => {
+        app.post('/multiple', (req, res) => {
+            console.log(req.body);
+
+            multiple(req.body).then((array) => {
                 res.send(array)
                 console.log(array, "10 docs");
                 console.log(req.query);
@@ -200,6 +200,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
         app.post('/subscribe', (req, res) => {
             const subscription = req.body
             // first make sure no dublicate
+            console.log(subscription , req, 'ssssssssssssssssssss');
             subscribersCollection.findOne(subscription, {}, (err, res) => {
                 if (err) console.error(err);
                 if (res) {

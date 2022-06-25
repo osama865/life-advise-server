@@ -1,3 +1,0 @@
-exports.messages = (status , error) => {
-
-}
