@@ -197,7 +197,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
             })
         })
 
-        app.post('/subscribe', (req, res) => {
+        app.post('/subscribe', (req, response) => {
             const subscription = req.body
             // first make sure no dublicate
             console.log(subscription , req, 'ssssssssssssssssssss');
@@ -206,6 +206,7 @@ MongoClient.connect(url, { useUnifiedTopology: true })
                 if (res) {
                     // if the doc is already saved just exit
                     console.log('doc is found', res);
+                    response.send("you are already subscribe to notifications!")
                     return;
                 } else {
                     // if doc not found then add it 
@@ -217,7 +218,10 @@ MongoClient.connect(url, { useUnifiedTopology: true })
                     });
                     // send wellcoming message
                     webpush.sendNotification(subscription, wellcoming)
-                        .then(result => console.log(result))
+                        .then(result => {
+                            response.send("Your now subscribed")
+                            console.log(result)
+                        })
                         .catch(e => console.log("error ", e.stack))
                 }
             })
