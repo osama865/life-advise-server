@@ -13,6 +13,7 @@
     "mongoose": "^6.4.4",
     "node-schedule": "^2.1.0",
     "ping": "^0.4.2",
+    "redis": "^4.2.0",
     "uuid": "^8.3.2",
     "web-push": "^3.5.0"
   },
@@ -24,6 +25,10 @@
     "branch": "git checkout -b $BRANCH_NAME",
     "merge": "git checkout master && git merge $BRANCH_NAME",
     "start": "node index.js",
+    "redis" : "redis-server",
     "test": "jest"
+  },
+  "devDependencies": {
+    "human-interval": "^2.0.1"
   }
 }
