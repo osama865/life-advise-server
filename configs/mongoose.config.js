@@ -5,6 +5,8 @@ const url =
 mongoose.connect(url, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+}).catch((error)=>{
+  console.log(error);
 })
 
 module.exports = mongoose

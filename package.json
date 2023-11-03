@@ -1,21 +1,17 @@
 {
-  "engines": {
-    "node": "16.x",
-    "npm": "8.x"
-  },
   "dependencies": {
-    "axios": "^0.27.2",
-    "body-parser": "^1.20.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "mongodb": "^4.5.0",
-    "mongoose": "^6.4.4",
-    "node-schedule": "^2.1.0",
-    "ping": "^0.4.2",
-    "redis": "^4.2.0",
-    "uuid": "^8.3.2",
-    "web-push": "^3.5.0"
+    "axios": "0.27.2",
+    "body-parser": "1.20.0",
+    "cors": "2.8.5",
+    "dotenv": "16.0.1",
+    "express": "4.18.1",
+    "mongodb": "4.5.0",
+    "mongoose": "6.4.4",
+    "node-schedule": "2.1.0",
+    "ping": "0.4.2",
+    "redis": "4.2.0",
+    "uuid": "8.3.2",
+    "web-push": "3.5.0"
   },
   "scripts": {
     "commit": "git add . && git commit -m $M",
@@ -29,6 +25,6 @@
     "test": "jest"
   },
   "devDependencies": {
-    "human-interval": "^2.0.1"
+    "human-interval": "2.0.1"
   }
 }
