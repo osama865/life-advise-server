@@ -4,7 +4,7 @@ const { random_advice, multiple_advice } = require("../services/advice.services"
 const random = async (req, res) => {
     try {
         const advice = await random_advice()
-        res.send(advice)
+        res.send(advice || "hey empty shit")
     } catch (error) {
         console.log(error)
         res.send(error)

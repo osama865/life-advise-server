@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const url =
-  "mongodb+srv://advice:XLUoDAWlrhoUjcaH@cluster0.ezstx.mongodb.net/life?retryWrites=true&w=majority";
+  process.env.URL ;
 
 mongoose.connect(url, {
+  dbName:"life",
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).catch((error)=>{

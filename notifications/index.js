@@ -7,7 +7,8 @@ webPush.setVapidDetails(process.env.WEB_PUSH_CONTACT, process.env.PUBLIC_VAPID_K
 const send_notification = async (subscription = {}, payload = {}) => {
     console.log('im sending notification with the payload', payload);
     try {
-        await webPush.sendNotification(subscription, JSON.stringify(payload))
+        const sendedNotification = await webPush.sendNotification(subscription, JSON.stringify(payload))
+        console.log(sendedNotification);
     } catch (error) {
         throw new Error(error)
     }
